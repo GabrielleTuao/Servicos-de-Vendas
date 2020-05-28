@@ -1,2 +1,2 @@
 # Servicos-de-Vendas
-# Segundo commit Inserir, Alterar e Deletar clientes funcionando.
+## Segundo commit Inserir, Alterar e Remover clientes funcionando. ##
