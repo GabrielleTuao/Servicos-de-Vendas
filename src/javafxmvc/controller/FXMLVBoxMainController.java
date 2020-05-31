@@ -40,4 +40,11 @@ public class FXMLVBoxMainController implements Initializable {
         AnchorPane a = (AnchorPane) FXMLLoader.load(getClass().getResource("/javafxmvc/view/FXMLAnchorPaneCadastrosClientes.fxml"));
         anchorPane.getChildren().setAll(a); //a representa a telinha que eu quero abrir.
     }
+    
+    @FXML
+    public void handleMenuItemProcessosVendas() throws IOException{ //a exception é pelo fato de que talvez não encontre o pacote que eu estou procurando
+        AnchorPane a = (AnchorPane) FXMLLoader.load(getClass().getResource("/javafxmvc/view/FXMLAnchorPaneProcessosVendas.fxml"));
+        anchorPane.getChildren().setAll(a); //a representa a telinha que eu quero abrir.
+    }
+  
 }
