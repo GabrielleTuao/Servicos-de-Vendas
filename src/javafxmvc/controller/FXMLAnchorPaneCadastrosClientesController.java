@@ -20,15 +20,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafxmvc.model.dao.ClienteDAO;
+import javafxmvc.model.domain.Cliente;
 import javafxmvc.model.database.Database;
 import javafxmvc.model.database.DatabaseFactory;
-import javafxmvc.model.domain.Cliente;
 
-/**
- * FXML Controller class
- *
- * @author Gabrielle Tuão
- */
 public class FXMLAnchorPaneCadastrosClientesController implements Initializable {
 
     @FXML
@@ -44,7 +39,7 @@ public class FXMLAnchorPaneCadastrosClientesController implements Initializable 
     @FXML
     private Button buttonRemover;
     @FXML
-    private Label labelClienteCodigo;
+    private Label labelClienteCodigo;   
     @FXML
     private Label labelClienteNome;
     @FXML
@@ -55,29 +50,33 @@ public class FXMLAnchorPaneCadastrosClientesController implements Initializable 
     private List<Cliente> listClientes;
     private ObservableList<Cliente> observableListClientes;
 
-    private final Database database = DatabaseFactory.getDatabase("postgresql"); //
-    private final Connection connection = database.conectar(); //tem método conectar(DatabasePostgreSQL)
+    //Atributos para manipulação de Banco de Dados
+    private final Database database = DatabaseFactory.getDatabase("postgresql");
+    private final Connection connection = database.conectar();//tem método conectar(DatabasePostgreSQL)
     private final ClienteDAO clienteDAO = new ClienteDAO();//instanciou uma classe cliente DAO utilizando o método listar, assim irá se ter uma lista com todos os clientes
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        clienteDAO.setConnection(connection);
-        carregarTableViewCliente();
+        clienteDAO.setConnection (connection);
+        
+        carregarTableViewClientes();
 
-        //Listen adicionando diante quaisquer alterações na seleção de itens do TableView
+        // Limpando a exibição dos detalhes do cliente
+        selecionarItemTableViewClientes(null);
+
+        // Listen acionado diante de quaisquer alterações na seleção de itens do TableView
         tableViewClientes.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> selecionarItemTableViewClientes(newValue));
     }
 
-    public void carregarTableViewCliente() {
+    public void carregarTableViewClientes() {
         tableColumnClienteNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         tableColumnClienteCPF.setCellValueFactory(new PropertyValueFactory<>("cpf"));
 
-        listClientes = clienteDAO.listar();//vai selecionar todos os meus clientes e guardar no listClientes
+        listClientes = clienteDAO.listar();
 
         observableListClientes = FXCollections.observableArrayList(listClientes);
         tableViewClientes.setItems(observableListClientes);
-
     }
 
     public void selecionarItemTableViewClientes(Cliente cliente) {
@@ -102,25 +101,24 @@ public class FXMLAnchorPaneCadastrosClientesController implements Initializable 
         boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastrosClientesDialog(cliente);
         if (buttonConfirmarClicked) {
             clienteDAO.inserir(cliente);
-            carregarTableViewCliente();
+            carregarTableViewClientes();
         }
     }
 
     @FXML
     public void handleButtonAlterar() throws IOException {
-        Cliente cliente = tableViewClientes.getSelectionModel().getSelectedItem();
+        Cliente cliente = tableViewClientes.getSelectionModel().getSelectedItem();//Obtendo cliente selecionado
         if (cliente != null) {
             boolean buttonConfirmarClicked = showFXMLAnchorPaneCadastrosClientesDialog(cliente);
             if (buttonConfirmarClicked) {
                 clienteDAO.alterar(cliente);
-                carregarTableViewCliente();
+                carregarTableViewClientes();
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Por favor, escolha um cliente na Tabela!");
             alert.show();
         }
-
     }
 
     @FXML
@@ -128,7 +126,7 @@ public class FXMLAnchorPaneCadastrosClientesController implements Initializable 
         Cliente cliente = tableViewClientes.getSelectionModel().getSelectedItem();
         if (cliente != null) {
             clienteDAO.remover(cliente);
-            carregarTableViewCliente();
+            carregarTableViewClientes();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setContentText("Por favor, escolha um cliente na Tabela!");
@@ -138,25 +136,32 @@ public class FXMLAnchorPaneCadastrosClientesController implements Initializable 
 
     public boolean showFXMLAnchorPaneCadastrosClientesDialog(Cliente cliente) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-
-        loader.setLocation(FXMLAnchorPaneCadastrosClientesDialogController.class.getResource(
-                "/javafxmvc/view/FXMLAnchorPaneCadastrosClientesDialog.fxml"));
+        loader.setLocation(FXMLAnchorPaneCadastrosClientesDialogController.class.getResource("/javafxmvc/view/FXMLAnchorPaneCadastrosClientesDialog.fxml"));
         AnchorPane page = (AnchorPane) loader.load();
-        
+
         // Criando um Estágio de Diálogo (Stage Dialog)
         Stage dialogStage = new Stage();
         dialogStage.setTitle("Cadastro de Clientes");
+        //Especifica a modalidade para esta fase . Isso deve ser feito antes de fazer o estágio visível. A modalidade pode ser: Modality.NONE , Modality.WINDOW_MODAL , ou Modality.APPLICATION_MODAL 
+        //dialogStage.initModality(Modality.WINDOW_MODAL);//WINDOW_MODAL (possibilita minimizar)
+        
+        //Especifica a janela do proprietário para esta página, ou null para um nível superior.
+        //dialogStage.initOwner(null); //null deixa a Tela Principal livre para ser movida
+        //dialogStage.initOwner(this.tableViewClientes.getScene().getWindow()); //deixa a tela de Preenchimento dos dados como prioritária
+        
         Scene scene = new Scene(page);
         dialogStage.setScene(scene);
-        
+
         // Setando o cliente no Controller.
         FXMLAnchorPaneCadastrosClientesDialogController controller = loader.getController();
         controller.setDialogStage(dialogStage);
         controller.setCliente(cliente);
-        
+
         // Mostra o Dialog e espera até que o usuário o feche
         dialogStage.showAndWait();
-        
+
         return controller.isButtonConfirmarClicked();
+
     }
+
 }

@@ -30,13 +30,13 @@ public class FXMLAnchorPaneCadastrosClientesDialogController implements Initiali
     @FXML
     private Button buttonCancelar;
 
-    private Stage dialogStage; //stage pq terá um elemento na classe de controle pra representar a tela aberta, pois em alguns momentos será posssível abrir e fechar a tela
+    private Stage dialogStage;//stage pq terá um elemento na classe de controle pra representar a tela aberta, pois em alguns momentos será posssível abrir e fechar a tela
     private boolean buttonConfirmarClicked = false;//Atributo existe apenas para saber se a pessoa clicou no botão confirmar ou no cancelar, importante para a classe anterior de controle de cadastros
     private Cliente cliente;//tipo de classe na qual irá se inserir todos os dados para serem mandados para o banco de dados
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+
     }
 
     public Stage getDialogStage() {
@@ -47,16 +47,8 @@ public class FXMLAnchorPaneCadastrosClientesDialogController implements Initiali
         this.dialogStage = dialogStage;
     }
 
-    public boolean isButtonConfirmarClicked() {
-        return buttonConfirmarClicked;
-    }
-
-    public void setButtonConfirmarClicked(boolean buttonConfirmarClicked) {
-        this.buttonConfirmarClicked = buttonConfirmarClicked;
-    }
-
     public Cliente getCliente() {
-        return cliente;
+        return this.cliente;
     }
 
     public void setCliente(Cliente cliente) {
@@ -66,30 +58,34 @@ public class FXMLAnchorPaneCadastrosClientesDialogController implements Initiali
         this.textFieldClienteTelefone.setText(cliente.getTelefone());
     }
 
+    public boolean isButtonConfirmarClicked() {
+        return buttonConfirmarClicked;
+    }
+
     @FXML
     public void handleButtonConfirmar() {//método convocado apartir do clique em confirmar
-        if(validarEntradaDeDados()){
-        //todos os textfield são de preenchimento de dados dos cliente
-        cliente.setNome(textFieldClienteNome.getText());
-        cliente.setCpf(textFieldClienteCPF.getText());
-        cliente.setTelefone(textFieldClienteTelefone.getText());
+        if (validarEntradaDeDados()) {
+            //todos os textfield são de preenchimento de dados dos cliente
+            cliente.setNome(textFieldClienteNome.getText());
+            cliente.setCpf(textFieldClienteCPF.getText());
+            cliente.setTelefone(textFieldClienteTelefone.getText());
 
-        buttonConfirmarClicked = true;//atributo criado para saber que o usuário interagil usando o button confirmar
-        dialogStage.close();//fecha a tela na qual o usuário está interagindo
+            buttonConfirmarClicked = true;//atributo criado para saber que o usuário interagil usando o button confirmar
+            dialogStage.close();//fecha a tela na qual o usuário está interagindo
         }
     }
 
     @FXML
     public void handleButtonCancelar() {
-        dialogStage.close();
-        //se o usuário desistir de acrescentar dados então ele simplesmente fecha a telinha
+        getDialogStage().close();
+         //se o usuário desistir de acrescentar dados então ele simplesmente fecha a telinha
     }
 
     //Validar entrada de dados para o cadastro
     private boolean validarEntradaDeDados() {
-        
-        //método só para identticar se usuário vai digitar valores nulos, 
+         //método só para identticar se usuário vai digitar valores nulos, 
         String errorMessage = "";
+
         if (textFieldClienteNome.getText() == null || textFieldClienteNome.getText().length() == 0) {
             errorMessage += "Nome inválido!\n";
         }
@@ -99,7 +95,7 @@ public class FXMLAnchorPaneCadastrosClientesDialogController implements Initiali
         if (textFieldClienteTelefone.getText() == null || textFieldClienteTelefone.getText().length() == 0) {
             errorMessage += "Telefone inválido!\n";
         }
-        
+
         if (errorMessage.length() == 0) {
             return true;
         } else {
@@ -112,4 +108,5 @@ public class FXMLAnchorPaneCadastrosClientesDialogController implements Initiali
             return false;
         }
     }
+
 }

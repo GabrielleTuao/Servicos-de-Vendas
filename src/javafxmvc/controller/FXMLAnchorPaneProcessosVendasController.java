@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -41,7 +41,7 @@ public class FXMLAnchorPaneProcessosVendasController implements Initializable {
     @FXML
     private TableColumn<Venda, Integer> tableColumnVendaCodigo;
     @FXML
-    private TableColumn<Venda, LocalDate> tableColumnVendaData;
+    private TableColumn<Venda, Date> tableColumnVendaData;
     @FXML
     private TableColumn<Venda, Venda> tableColumnVendaCliente;
     @FXML
@@ -55,19 +55,19 @@ public class FXMLAnchorPaneProcessosVendasController implements Initializable {
     @FXML
     private Label labelVendaData;
     @FXML
-    private Label labelVendaPago;
-    @FXML 
     private Label labelVendaValor;
     @FXML
+    private Label labelVendaPago;
+    @FXML
     private Label labelVendaCliente;
-
+        
     //Atributo necessários para se poder listar todos itens armazenados no banco de dados
-    private List<Venda> listVendas; //por que as classes DAO retornam listas não observableLists
+    private List<Venda> listVendas;//por que as classes DAO retornam listas não observableLists
     private ObservableList<Venda> observableListVendas;
     /*por que quando for setar os dados da tableview no javafx é necessário que esses dados sejam setados por uma 
     estrutura chamada observableList*/
     
-    //Atributos para manipulação de banco de dados
+    //Atributos para manipulação de Banco de Dados
     //Abaixo são atributos justamente do tipo DAO
     private final Database database = DatabaseFactory.getDatabase("postgresql");//p/ solicitar uma conexão com Banco de dados no caso o postgre
     private final Connection connection = database.conectar();
@@ -77,56 +77,57 @@ public class FXMLAnchorPaneProcessosVendasController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        vendaDAO.setConnection(connection);//seta a conexão do vendaDAO
-        carregarTableViewVendas();//criado para ficar atualizando os dados da tabela
-        
+        vendaDAO.setConnection(connection);
+
+        carregarTableViewVendas();
+
+        // Limpando a exibição dos detalhes da venda
         selecionarItemTableViewVendas(null);
-        //Listen acionado diante de quaisquer alterações na seleção de itens do TableView
+
+        // Listen acionado diante de quaisquer alterações na seleção de itens do TableView
         tableViewVendas.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> selecionarItemTableViewVendas(newValue));
-        
     }
-    
-    public void selecionarItemTableViewVendas(Venda venda){
-        if (venda != null){
+
+    public void carregarTableViewVendas() {
+        tableColumnVendaCodigo.setCellValueFactory(new PropertyValueFactory<>("cdVenda"));//seja exibido codigo da venda
+        tableColumnVendaData.setCellValueFactory(new PropertyValueFactory<>("data"));//seja exibido data da venda
+        tableColumnVendaCliente.setCellValueFactory(new PropertyValueFactory<>("cliente"));//seja exibido dados do cliente da venda
+
+        listVendas = vendaDAO.listar();
+
+        observableListVendas = FXCollections.observableArrayList(listVendas);//aqui se converte um list de vendas em um observable array list
+        tableViewVendas.setItems(observableListVendas);
+    }
+
+    public void selecionarItemTableViewVendas(Venda venda) {
+        if (venda != null) {
             labelVendaCodigo.setText(String.valueOf(venda.getCdVenda()));
             labelVendaData.setText(String.valueOf(venda.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
             labelVendaValor.setText(String.format("%.2f", venda.getValor()));
             labelVendaPago.setText(String.valueOf(venda.getPago()));
             labelVendaCliente.setText(venda.getCliente().toString());
-       }else{
+        } else {
             labelVendaCodigo.setText("");
             labelVendaData.setText("");
-            labelVendaPago.setText("");
             labelVendaValor.setText("");
+            labelVendaPago.setText("");
             labelVendaCliente.setText("");
         }
     }
-    
-    public void carregarTableViewVendas(){
-        //objetivo de configurar minha tabela, 
-        tableColumnVendaCodigo.setCellValueFactory(new PropertyValueFactory<>("cdVenda"));//seja exibido codigo da venda
-        tableColumnVendaData.setCellValueFactory(new PropertyValueFactory<>("data"));//seja exibido data da venda
-        tableColumnVendaCliente.setCellValueFactory(new PropertyValueFactory<>("cliente"));//seja exibido dados do cliente da venda
-        
-        listVendas = vendaDAO.listar();
-        
-        observableListVendas = FXCollections.observableArrayList(listVendas);//aqui se converte um list de vendas em um observable array list
-        tableViewVendas.setItems(observableListVendas);
-    }
-    
-     @FXML
-    public void handleButtonInserir() throws IOException , SQLException{
-         Venda venda = new Venda();
+
+    @FXML
+    public void handleButtonInserir() throws IOException {
+        Venda venda = new Venda();
         List<ItemDeVenda> listItensDeVenda = new ArrayList<>();
         venda.setItensDeVenda(listItensDeVenda);
         boolean buttonConfirmarClicked = showFXMLAnchorPaneProcessosVendasDialog(venda);
         if (buttonConfirmarClicked) {
             try {
-/*Significa que quando mandar inseir uma venda ele não irá inserir de fato na tabela, só vai inserir de fato 
-quando for chamar  o método commit, por se tratar de um obeto composto, eu só posso inserir uma venda se eu conseguir colocar
- todos os itens de venda, para garantir se faz o commit no final*/
-                connection.setAutoCommit(false);              
+    /*Significa que quando mandar inseir uma venda ele não irá inserir de fato na tabela, só vai inserir de fato 
+    quando for chamar  o método commit, por se tratar de um obeto composto, eu só posso inserir uma venda se eu conseguir colocar
+    todos os itens de venda, para garantir se faz o commit no final*/
+                connection.setAutoCommit(false);
                 vendaDAO.setConnection(connection);
                 vendaDAO.inserir(venda);
                 itemDeVendaDAO.setConnection(connection);
@@ -150,7 +151,7 @@ quando for chamar  o método commit, por se tratar de um obeto composto, eu só 
             }
         }
     }
-    
+
     @FXML
     public void handleButtonAlterar() throws IOException {
 
@@ -164,7 +165,7 @@ quando for chamar  o método commit, por se tratar de um obeto composto, eu só 
             vendaDAO.setConnection(connection);
             itemDeVendaDAO.setConnection(connection);
             produtoDAO.setConnection(connection);
-//primeiro tem que deletar a venda pra depois deletar os itens de venda
+            //primeiro tem que deletar a venda pra depois deletar os itens de venda
             for (ItemDeVenda listItemDeVenda : venda.getItensDeVenda()) {
                 Produto produto = listItemDeVenda.getProduto();
                 produto.setQuantidade(produto.getQuantidade() + listItemDeVenda.getQuantidade());
@@ -180,26 +181,28 @@ quando for chamar  o método commit, por se tratar de um obeto composto, eu só 
             alert.show();
         }
     }
-    
-    public boolean showFXMLAnchorPaneProcessosVendasDialog(Venda venda) throws IOException{
+
+    public boolean showFXMLAnchorPaneProcessosVendasDialog(Venda venda) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(FXMLAnchorPaneProcessosVendasDialogController.class.getResource("/javafxmvc/view/FXMLAnchorPaneProcessosVendasDialog.fxml"));
         AnchorPane page = (AnchorPane) loader.load();
-        
-        //Criando um Estágio de Diálogo (Stage Dialog)
+
+        // Criando um Estágio de Diálogo (Stage Dialog)
         Stage dialogStage = new Stage();
-        dialogStage.setTitle ("Registro de Vendas");
-        Scene scene  = new Scene(page);
+        dialogStage.setTitle("Registro de Vendas");
+        Scene scene = new Scene(page);
         dialogStage.setScene(scene);
-        
-        //Setando a Venda no Controller
+
+        // Setando a Venda no Controller.
         FXMLAnchorPaneProcessosVendasDialogController controller = loader.getController();
         controller.setDialogStage(dialogStage);
         controller.setVenda(venda);
-        
-        //Mostra dialog e espera até o usuário o feche
+
+        // Mostra o Dialog e espera até que o usuário o feche
         dialogStage.showAndWait();
+
         return controller.isButtonConfirmarClicked();
+
     }
-    
+
 }

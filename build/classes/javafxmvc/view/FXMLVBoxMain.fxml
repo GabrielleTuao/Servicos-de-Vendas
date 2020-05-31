@@ -10,7 +10,7 @@
    <children>
       <MenuBar>
         <menus>
-          <Menu mnemonicParsing="false" text="Cadastros">
+          <Menu mnemonicParsing="false" onAction="#handleMenuItemCadastrosClientes" text="Cadastros">
             <items>
               <MenuItem mnemonicParsing="false" text="Categorias" />
                   <MenuItem fx:id="menuItemCadastrosClientes" mnemonicParsing="false" onAction="#handleMenuItemCadastrosClientes" text="Clientes" />
@@ -22,18 +22,18 @@
               <MenuItem fx:id="menuItemProcessosVendas" mnemonicParsing="false" onAction="#handleMenuItemProcessosVendas" text="Vendas" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Gráficos">
+            <Menu mnemonicParsing="false" text="Gráficos">
+               <items>
+                  <MenuItem fx:id="menuItemGraficosVendasPorMes" mnemonicParsing="false" onAction="#handleMenuItemGraficosVendasPorMes" text="Vendas por Mês" />
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Relatórios">
             <items>
-              <MenuItem fx:id="menuItemGraficosVendasPorMes" mnemonicParsing="false" text="Vendas por Mês" />
+              <MenuItem fx:id="menuItemRelatoriosQuantidadeProdutos" mnemonicParsing="false" text="Quantidade de Produtos em Estoque" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Relatórios">
-              <items>
-                <MenuItem fx:id="menuItemRelatoriosQuantidadeProdutosEstoque" mnemonicParsing="false" text="Quantidade de produtos em estoque" />
-              </items>
-            </Menu>
         </menus>
       </MenuBar>
-      <AnchorPane fx:id="anchorPane" prefHeight="382.0" prefWidth="600.0" />
+      <AnchorPane fx:id="anchorPane" />
    </children>
 </VBox>

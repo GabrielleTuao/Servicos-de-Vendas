@@ -62,7 +62,7 @@ public class FXMLAnchorPaneProcessosVendasDialogController implements Initializa
     private ObservableList<Produto> observableListProdutos;
     private ObservableList<ItemDeVenda> observableListItensDeVenda;
 
-    //Atrinutos para manipulação de Banco de Dados
+    //Atributos para manipulação de Banco de Dados
     private final Database database = DatabaseFactory.getDatabase("postgresql");
     private final Connection connection = database.conectar();
     private final ClienteDAO clienteDAO = new ClienteDAO();
@@ -83,18 +83,27 @@ public class FXMLAnchorPaneProcessosVendasDialogController implements Initializa
         tableColumnItemDeVendaProduto.setCellValueFactory(new PropertyValueFactory<>("produto"));
         tableColumnItemDeVendaQuantidade.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
         tableColumnItemDeVendaValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+
     }
 
     public void carregarComboBoxClientes() {
+
         listClientes = clienteDAO.listar();
+
         observableListClientes = FXCollections.observableArrayList(listClientes);
         comboBoxVendaCliente.setItems(observableListClientes);
+
+        //Como não será possível alterar uma Venda, não precisaremos implementar a seleção do cliente (caso seja uma alteração de venda)
     }
 
     public void carregarComboBoxProdutos() {
+
         listProdutos = produtoDAO.listar();
+
         observableListProdutos = FXCollections.observableArrayList(listProdutos);
         comboBoxVendaProduto.setItems(observableListProdutos);
+
+        //Como não será possível alterar uma Venda, não precisaremos implementar a seleção do produto (caso seja uma alteração de venda)
     }
 
     public Stage getDialogStage() {
@@ -106,7 +115,7 @@ public class FXMLAnchorPaneProcessosVendasDialogController implements Initializa
     }
 
     public Venda getVenda() {
-        return venda;
+        return this.venda;
     }
 
     public void setVenda(Venda venda) {
@@ -118,20 +127,20 @@ public class FXMLAnchorPaneProcessosVendasDialogController implements Initializa
     }
 
     @FXML
-    public void handleButtonAdicionar() {// acionado a partir do clique no botão ADD
+    public void handleButtonAdicionar() {
         Produto produto;
         ItemDeVenda itemDeVenda = new ItemDeVenda();
 
-        if (comboBoxVendaProduto.getSelectionModel().getSelectedItem() != null) { //se ele verificar que o produto existe a linha de baixo irá guardar o produto
-            produto = (Produto) comboBoxVendaProduto.getSelectionModel().getSelectedItem();//verifica se quantidade que o cliente quer comprar é maior que a quantidade que tem do produto
+        if (comboBoxVendaProduto.getSelectionModel().getSelectedItem() != null) {
+            produto = (Produto) comboBoxVendaProduto.getSelectionModel().getSelectedItem();
 
-            if (produto.getQuantidade() >= Integer.parseInt(textFieldVendaItemDeVendaQuantidade.getText())) {
-                itemDeVenda.setProduto((Produto) comboBoxVendaProduto.getSelectionModel().getSelectedItem());
+            if (produto.getQuantidade() >= Integer.parseInt(textFieldVendaItemDeVendaQuantidade.getText())) { //se ele verificar que o produto existe a linha de baixo irá guardar o produto
+                itemDeVenda.setProduto((Produto) comboBoxVendaProduto.getSelectionModel().getSelectedItem()); //verifica se quantidade que o cliente quer comprar é maior que a quantidade que tem do produto
                 itemDeVenda.setQuantidade(Integer.parseInt(textFieldVendaItemDeVendaQuantidade.getText()));
                 itemDeVenda.setValor(itemDeVenda.getProduto().getPreco() * itemDeVenda.getQuantidade());
 
-                venda.getItensDeVenda().add(itemDeVenda);//vai setar o valor do item de venda
-                venda.setValor(venda.getValor() + itemDeVenda.getValor());//sempre que eu adicionar algum item o valor irá alterar
+                venda.getItensDeVenda().add(itemDeVenda);
+                venda.setValor(venda.getValor() + itemDeVenda.getValor());
 
                 observableListItensDeVenda = FXCollections.observableArrayList(venda.getItensDeVenda());
                 tableViewItensDeVenda.setItems(observableListItensDeVenda);
