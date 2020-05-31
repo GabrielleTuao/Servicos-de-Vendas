@@ -4,5 +4,6 @@
 #
 ##### ---> Implementando processo de venda
 ##### -> Terceiro commit, Processo de venda feito parcialmente agora é possível ter uma listagem de itens de venda
+#
 ###### Falta implementar Gráficos
 ###### Falta implementar Relatórios
