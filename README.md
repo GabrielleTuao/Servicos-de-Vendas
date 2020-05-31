@@ -1,4 +1,4 @@
-# Controle de Vendas implementado no padrão DAO 
+# Controle de Vendas implementado no padrão MVC 
 #
 #### Segundo commit Inserir, Alterar e Remover clientes funcionando. ##
 #
