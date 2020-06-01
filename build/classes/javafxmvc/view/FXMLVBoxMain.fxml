@@ -29,7 +29,7 @@
             </Menu>
           <Menu mnemonicParsing="false" text="Relatórios">
             <items>
-              <MenuItem fx:id="menuItemRelatoriosQuantidadeProdutos" mnemonicParsing="false" text="Quantidade de Produtos em Estoque" />
+              <MenuItem fx:id="menuItemRelatoriosQuantidadeProdutos" mnemonicParsing="false" onAction="#handleMenuItemRelatoriosQuantidadeProdutos" text="Quantidade de Produtos em Estoque" />
             </items>
           </Menu>
         </menus>
